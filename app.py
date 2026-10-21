@@ -41,13 +41,14 @@ def allowed_file(filename):
     return Path(filename).suffix.lower() in ALLOWED_EXTENSIONS
 
 
+
 def predict_image(image_path):
     with Image.open(image_path) as img:
         img = img.convert("RGB").resize(IMAGE_SIZE)
         image_array = np.asarray(img, dtype=np.float32)
 
-    # MobileNetV2 model expects RGB pixel values scaled to [-1, 1]
-    image_array = image_array / 127.5 - 1.0
+    # Model already contains a Rescaling layer.
+    # Pass raw RGB pixel values in the range 0–255.
     image_array = np.expand_dims(image_array, axis=0)
 
     score = float(model.predict(image_array, verbose=0)[0][0])
@@ -61,6 +62,7 @@ def predict_image(image_path):
         confidence = (1 - score) * 100
 
     return prediction, confidence
+
 
 
 @app.route("/", methods=["GET"])
@@ -235,4 +237,6 @@ def download_report():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    import os
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
