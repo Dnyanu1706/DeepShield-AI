@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DeepShield AI{% endblock %}</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            color-scheme: dark;
+            --bg: #0b0d12;
+            --surface: #131720;
+            --surface-light: #191f2b;
+            --border: #293243;
+            --text: #f3f6fc;
+            --muted: #9ba8ba;
+            --blue: #4f8cff;
+            --cyan: #48d7e8;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", Arial, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(ellipse at 50% 0%, rgba(46, 93, 180, 0.12), transparent 38%),
+                var(--bg);
+        }
+
+        a {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 18px;
+            padding: 17px 6%;
+            background: rgba(11, 13, 18, 0.94);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+            font-size: 21px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            display: inline-grid;
+            place-items: center;
+            width: 36px;
+            height: 36px;
+            color: #fff;
+            background: linear-gradient(135deg, #3977f6, #39c5df);
+            border-radius: 11px;
+            box-shadow: 0 5px 18px rgba(57, 119, 246, 0.22);
+        }
+
+        .brand span:last-child {
+            color: #9fc1ff;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 22px;
+        }
+
+        .nav-links a {
+            color: #b2bdcd;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #fff;
+        }
+
+        .page-container {
+            width: min(100% - 36px, 1100px);
+            margin: 40px auto;
+        }
+
+        .panel {
+            padding: 28px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.16);
+        }
+
+        h1, h2, h3 {
+            color: var(--text);
+        }
+
+        p {
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 19px;
+            color: #fff;
+            background: linear-gradient(135deg, #3977f6, #285bd1);
+            border: 1px solid #4b82f5;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 7px 22px rgba(57, 119, 246, 0.23);
+        }
+
+        .secondary-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 11px 16px;
+            color: #d4deec;
+            background: #171d28;
+            border: 1px solid #344054;
+            border-radius: 9px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .secondary-btn:hover {
+            background: #202938;
+        }
+
+        .footer {
+            padding: 24px 16px;
+            color: #778397;
+            text-align: center;
+            font-size: 12px;
+            border-top: 1px solid #202735;
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                padding: 15px 5%;
+            }
+
+            .nav-links {
+                gap: 14px;
+            }
+
+            .page-container {
+                width: min(100% - 24px, 1100px);
+                margin: 24px auto;
+            }
+
+            .panel {
+                padding: 19px;
+            }
+        }
+    </style>
+
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <a class="brand" href="{{ url_for('home') }}">
+            <span class="brand-icon">🛡</span>
+            <span>DeepShield <span>AI</span></span>
+        </a>
+
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('dashboard_page') }}">Dashboard</a>
+            <a href="{{ url_for('history_page') }}">History</a>
+            <a href="{{ url_for('download_report') }}">PDF Report</a>
+        </div>
+    </nav>
+
+    <main class="page-container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        DeepShield AI · AI-Based Deepfake Image Detection System
+        <br>
+        Experimental predictions may be incorrect.
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

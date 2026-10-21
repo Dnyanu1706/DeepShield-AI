@@ -1,0 +1,265 @@
+
+{% extends "base.html" %}
+
+{% block title %}Detection Result | DeepShield AI{% endblock %}
+
+{% block head %}
+<style>
+    .result-page {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .result-header {
+        text-align: center;
+        margin-bottom: 28px;
+    }
+
+    .result-header h1 {
+        margin: 0 0 10px;
+        font-size: clamp(28px, 5vw, 38px);
+        color: #f1f5f9;
+    }
+
+    .result-header p {
+        color: #94a3b8;
+        line-height: 1.7;
+    }
+
+    .result-card {
+        padding: 28px;
+        border: 1px solid #263449;
+        border-radius: 18px;
+        background: #101b2b;
+    }
+
+    .result-status {
+        padding: 20px;
+        margin-bottom: 25px;
+        border-radius: 14px;
+        text-align: center;
+    }
+
+    .status-real {
+        background: #10352f;
+        border: 1px solid #1e5b4d;
+        color: #6ee7b7;
+    }
+
+    .status-fake {
+        background: #3a1b29;
+        border: 1px solid #693044;
+        color: #fda4af;
+    }
+
+    .result-status h2 {
+        margin: 0 0 8px;
+        font-size: 28px;
+    }
+
+    .result-status p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .image-preview {
+        text-align: center;
+        margin-bottom: 28px;
+    }
+
+    .image-preview img {
+        display: block;
+        max-width: 100%;
+        max-height: 420px;
+        margin: 0 auto;
+        object-fit: contain;
+        border: 1px solid #35445a;
+        border-radius: 14px;
+        background: #0b1220;
+    }
+
+    .filename {
+        margin-top: 12px;
+        color: #94a3b8;
+        font-size: 13px;
+        overflow-wrap: anywhere;
+    }
+
+    .score-section {
+        padding: 22px;
+        border: 1px solid #263449;
+        border-radius: 13px;
+        background: #0d1726;
+    }
+
+    .score-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+        color: #cbd5e1;
+        font-size: 14px;
+    }
+
+    .score-value {
+        color: #93c5fd;
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .progress-track {
+        height: 11px;
+        width: 100%;
+        overflow: hidden;
+        border-radius: 999px;
+        background: #263449;
+    }
+
+    .progress-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #2563eb, #60a5fa);
+    }
+
+    .score-note {
+        margin: 13px 0 0;
+        color: #94a3b8;
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .result-actions {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 25px;
+    }
+
+    .result-btn {
+        display: inline-block;
+        padding: 12px 18px;
+        border: 1px solid #3b82f6;
+        border-radius: 9px;
+        background: #2563eb;
+        color: #fff;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 650;
+    }
+
+    .result-btn:hover {
+        background: #1d4ed8;
+    }
+
+    .result-btn.secondary {
+        border-color: #35445a;
+        background: #172438;
+        color: #dbeafe;
+    }
+
+    .result-btn.secondary:hover {
+        background: #22334b;
+    }
+
+    .disclaimer {
+        margin-top: 22px;
+        padding: 15px;
+        border: 1px solid #3a3540;
+        border-radius: 12px;
+        background: #1b1b27;
+        color: #b9b8c7;
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    @media (max-width: 600px) {
+        .result-card {
+            padding: 16px;
+        }
+
+        .score-section {
+            padding: 16px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% set score_value = confidence | float %}
+{% set score_value = [[score_value, 0] | max, 100] | min %}
+
+<section class="result-page">
+    <header class="result-header">
+        <h1>Detection Result</h1>
+        <p>Your image has been processed by the DeepShield AI model.</p>
+    </header>
+
+    <div class="result-card">
+        {% if prediction == "Real" %}
+        <div class="result-status status-real">
+            <h2>✓ Predicted Real</h2>
+            <p>The model classified this image as Real.</p>
+        </div>
+        {% else %}
+        <div class="result-status status-fake">
+            <h2>⚠ Predicted Fake</h2>
+            <p>The model classified this image as Fake.</p>
+        </div>
+        {% endif %}
+
+        <div class="image-preview">
+            <img
+                src="{{ url_for('static', filename='uploads/' + filename) }}"
+                alt="Uploaded image analyzed by DeepShield AI"
+            >
+            <p class="filename">File: {{ filename }}</p>
+        </div>
+
+        <section class="score-section">
+            <div class="score-heading">
+                <span>Model Score</span>
+                <span class="score-value">{{ "%.2f" | format(confidence | float) }}%</span>
+            </div>
+
+            <div
+                class="progress-track"
+                role="img"
+                aria-label="Model score {{ '%.2f' | format(score_value) }} percent"
+            >
+                <div
+                    class="progress-fill"
+                    style="width: {{ score_value }}%;"
+                ></div>
+            </div>
+
+            <p class="score-note">
+                This score is the value returned by the model. It is not a
+                calibrated probability or a guarantee that the prediction is correct.
+            </p>
+        </section>
+
+        <div class="result-actions">
+            <a class="result-btn" href="{{ url_for('home') }}">
+                Analyze Another Image
+            </a>
+
+            <a class="result-btn secondary" href="{{ url_for('history_page') }}">
+                View History
+            </a>
+
+            <a class="result-btn secondary" href="{{ url_for('dashboard_page') }}">
+                Dashboard
+            </a>
+        </div>
+
+        <div class="disclaimer">
+            <strong>Important:</strong> DeepShield AI is experimental and may
+            misclassify images. Do not treat this result as proof that an image
+            is genuine or manipulated.
+        </div>
+    </div>
+</section>
+{% endblock %}

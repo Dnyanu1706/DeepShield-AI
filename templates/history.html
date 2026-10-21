@@ -1,0 +1,331 @@
+
+{% extends "base.html" %}
+
+{% block title %}Prediction History | DeepShield AI{% endblock %}
+
+{% block head %}
+<style>
+    .history-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 26px;
+    }
+
+    .history-title {
+        margin: 0 0 8px;
+        font-size: clamp(26px, 4vw, 34px);
+        font-weight: 750;
+        letter-spacing: -0.8px;
+    }
+
+    .history-subtitle {
+        margin: 0;
+        color: #94a3b8;
+        line-height: 1.6;
+    }
+
+    .history-count {
+        padding: 9px 13px;
+        border: 1px solid #26364b;
+        border-radius: 999px;
+        background: #111e31;
+        color: #93c5fd;
+        font-size: 13px;
+    }
+
+    .history-panel {
+        overflow: hidden;
+        border: 1px solid #263449;
+        border-radius: 16px;
+        background: #101b2b;
+    }
+
+    .panel-heading {
+        padding: 21px 23px;
+        border-bottom: 1px solid #263449;
+    }
+
+    .panel-heading h2 {
+        margin: 0 0 6px;
+        color: #f1f5f9;
+        font-size: 18px;
+    }
+
+    .panel-heading p {
+        margin: 0;
+        color: #94a3b8;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .history-table {
+        width: 100%;
+        min-width: 720px;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    .history-table th {
+        padding: 15px 18px;
+        background: #142237;
+        color: #9fb2cc;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .history-table td {
+        padding: 17px 18px;
+        border-bottom: 1px solid #243247;
+        color: #dbe5f2;
+        font-size: 13px;
+        vertical-align: middle;
+    }
+
+    .history-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .history-table tbody tr:hover {
+        background: #142237;
+    }
+
+    .record-id {
+        color: #94a3b8;
+        font-weight: 650;
+    }
+
+    .filename {
+        display: inline-block;
+        max-width: 220px;
+        overflow-wrap: anywhere;
+        color: #dbeafe;
+        font-weight: 600;
+    }
+
+    .prediction-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .prediction-real {
+        color: #6ee7b7;
+        background: #10352f;
+        border: 1px solid #1e5b4d;
+    }
+
+    .prediction-fake {
+        color: #fda4af;
+        background: #3a1b29;
+        border: 1px solid #693044;
+    }
+
+    .score {
+        color: #cbd5e1;
+        font-weight: 650;
+        white-space: nowrap;
+    }
+
+    .date-cell {
+        color: #a7b4c7 !important;
+        white-space: nowrap;
+    }
+
+    .empty-state {
+        padding: 45px 20px;
+        text-align: center;
+        color: #94a3b8;
+        line-height: 1.8;
+    }
+
+    .empty-icon {
+        margin-bottom: 12px;
+        font-size: 35px;
+    }
+
+    .empty-state h3 {
+        margin: 0 0 8px;
+        color: #f1f5f9;
+        font-size: 18px;
+    }
+
+    .empty-state p {
+        margin: 0 0 20px;
+    }
+
+    .history-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 22px;
+    }
+
+    .history-btn {
+        display: inline-block;
+        padding: 11px 16px;
+        border: 1px solid #3b82f6;
+        border-radius: 9px;
+        background: #2563eb;
+        color: #fff;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 650;
+        transition: background 0.2s ease;
+    }
+
+    .history-btn:hover {
+        background: #1d4ed8;
+    }
+
+    .history-btn.secondary {
+        border-color: #35445a;
+        background: #172438;
+        color: #dbeafe;
+    }
+
+    .history-btn.secondary:hover {
+        background: #22334b;
+    }
+
+    .history-note {
+        margin-top: 22px;
+        padding: 14px 16px;
+        border: 1px solid #3a3540;
+        border-radius: 12px;
+        background: #1b1b27;
+        color: #b9b8c7;
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    @media (max-width: 600px) {
+        .panel-heading {
+            padding: 18px;
+        }
+
+        .history-table th,
+        .history-table td {
+            padding: 14px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="history-header">
+    <div>
+        <h1 class="history-title">Prediction History</h1>
+        <p class="history-subtitle">
+            Review your previously analyzed images and their model predictions.
+        </p>
+    </div>
+
+    <div class="history-count">
+        {{ history | length }} records displayed
+    </div>
+</section>
+
+<section class="history-panel">
+    <div class="panel-heading">
+        <h2>Analysis Records</h2>
+        <p>Saved image predictions from DeepShield AI</p>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Filename</th>
+                    <th>Prediction</th>
+                    <th>Model Score</th>
+                    <th>Date &amp; Time</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in history %}
+                <tr>
+                    <td class="record-id">#{{ item["id"] }}</td>
+
+                    <td>
+                        <span class="filename" title="{{ item['filename'] }}">
+                            {{ item["filename"] }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {% if item["prediction"] == "Real" %}
+                        <span class="prediction-badge prediction-real">
+                            ● Real
+                        </span>
+                        {% else %}
+                        <span class="prediction-badge prediction-fake">
+                            ● Fake
+                        </span>
+                        {% endif %}
+                    </td>
+
+                    <td class="score">
+                        {{ "%.2f"|format(item["confidence"] | float) }}%
+                    </td>
+
+                    <td class="date-cell">
+                        {{ item["created_at"] }}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5">
+                        <div class="empty-state">
+                            <div class="empty-icon">🗂️</div>
+                            <h3>No prediction history yet</h3>
+                            <p>Analyze your first image to see records here.</p>
+                            <a class="history-btn" href="{{ url_for('home') }}">
+                                Analyze First Image
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<div class="history-actions">
+    <a class="history-btn" href="{{ url_for('home') }}">
+        Analyze Another Image
+    </a>
+
+    <a class="history-btn secondary" href="{{ url_for('dashboard_page') }}">
+        Back to Dashboard
+    </a>
+
+    <a class="history-btn secondary" href="{{ url_for('download_report') }}">
+        Download PDF Report
+    </a>
+</div>
+
+<div class="history-note">
+    <strong>Important:</strong> Predictions are experimental and may be incorrect.
+    The displayed model score is not a calibrated probability and does not
+    establish whether an image is genuinely real or fake.
+</div>
+{% endblock %}

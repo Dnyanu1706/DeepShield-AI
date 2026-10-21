@@ -1,0 +1,402 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | DeepShield AI{% endblock %}
+
+{% block head %}
+<style>
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 28px;
+    }
+
+    .dashboard-title {
+        margin: 0 0 8px;
+        font-size: clamp(26px, 4vw, 34px);
+        font-weight: 750;
+        letter-spacing: -0.8px;
+    }
+
+    .dashboard-subtitle {
+        margin: 0;
+        color: #94a3b8;
+        line-height: 1.6;
+    }
+
+    .dashboard-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 13px;
+        border: 1px solid #26364b;
+        border-radius: 999px;
+        color: #93c5fd;
+        background: #111e31;
+        font-size: 13px;
+    }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #60a5fa;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+
+    .stat-card {
+        position: relative;
+        overflow: hidden;
+        padding: 23px;
+        border: 1px solid #263449;
+        border-radius: 16px;
+        background: linear-gradient(145deg, #121e30, #0d1726);
+        transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        border-color: #3b82f6;
+    }
+
+    .stat-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 22px;
+    }
+
+    .stat-label {
+        color: #a6b4c8;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .stat-icon {
+        display: grid;
+        place-items: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        font-size: 21px;
+        background: #1b2c45;
+    }
+
+    .stat-value {
+        margin: 0;
+        font-size: clamp(30px, 4vw, 40px);
+        font-weight: 750;
+        letter-spacing: -1px;
+        color: #f1f5f9;
+        overflow-wrap: anywhere;
+    }
+
+    .stat-description {
+        margin: 9px 0 0;
+        color: #8191a8;
+        font-size: 12px;
+        line-height: 1.6;
+    }
+
+    .analytics-card {
+        padding: 25px;
+        margin-bottom: 24px;
+        border: 1px solid #263449;
+        border-radius: 16px;
+        background: #101b2b;
+    }
+
+    .section-heading {
+        margin: 0 0 7px;
+        font-size: 19px;
+        font-weight: 700;
+        color: #f1f5f9;
+    }
+
+    .section-description {
+        margin: 0 0 25px;
+        color: #94a3b8;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .distribution-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+
+    .distribution-label {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: #dbe5f2;
+    }
+
+    .legend-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .real-dot {
+        background: #34d399;
+    }
+
+    .fake-dot {
+        background: #fb7185;
+    }
+
+    .distribution-value {
+        color: #cbd5e1;
+        font-weight: 650;
+    }
+
+    .progress-track {
+        width: 100%;
+        height: 10px;
+        margin-bottom: 23px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: #263449;
+    }
+
+    .progress-fill {
+        height: 100%;
+        border-radius: 999px;
+        transition: width 0.4s ease;
+    }
+
+    .real-fill {
+        background: linear-gradient(90deg, #059669, #34d399);
+    }
+
+    .fake-fill {
+        background: linear-gradient(90deg, #e11d48, #fb7185);
+    }
+
+    .empty-state {
+        padding: 20px;
+        border: 1px dashed #35445a;
+        border-radius: 12px;
+        text-align: center;
+        color: #94a3b8;
+        line-height: 1.7;
+    }
+
+    .actions-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .action-card {
+        padding: 21px;
+        border: 1px solid #263449;
+        border-radius: 15px;
+        background: #101b2b;
+    }
+
+    .action-card h3 {
+        margin: 0 0 8px;
+        font-size: 16px;
+        color: #f1f5f9;
+    }
+
+    .action-card p {
+        margin: 0 0 18px;
+        color: #94a3b8;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .dashboard-btn {
+        display: inline-block;
+        padding: 11px 15px;
+        border: 1px solid #3b82f6;
+        border-radius: 9px;
+        background: #2563eb;
+        color: white;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 650;
+        transition: background 0.2s ease;
+    }
+
+    .dashboard-btn:hover {
+        background: #1d4ed8;
+    }
+
+    .dashboard-btn.secondary {
+        border-color: #35445a;
+        background: #172438;
+        color: #dbeafe;
+    }
+
+    .dashboard-btn.secondary:hover {
+        background: #22334b;
+    }
+
+    .disclaimer {
+        padding: 15px 17px;
+        border: 1px solid #3a3540;
+        border-radius: 12px;
+        background: #1b1b27;
+        color: #b9b8c7;
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    @media (max-width: 760px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .stat-card {
+            padding: 20px;
+        }
+
+        .actions-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .analytics-card {
+            padding: 19px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% set total = total_images | int %}
+{% set real = real_count | int %}
+{% set fake = fake_count | int %}
+{% set real_percent = (real * 100 / total) if total > 0 else 0 %}
+{% set fake_percent = (fake * 100 / total) if total > 0 else 0 %}
+
+<section class="dashboard-header">
+    <div>
+        <h1 class="dashboard-title">Dashboard Overview</h1>
+        <p class="dashboard-subtitle">
+            Monitor your image analysis activity and prediction statistics.
+        </p>
+    </div>
+
+    <div class="dashboard-badge">
+        <span class="status-dot"></span>
+        Image Detection
+    </div>
+</section>
+
+<section class="stats-grid">
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Total Images Analyzed</span>
+            <span class="stat-icon">📊</span>
+        </div>
+        <p class="stat-value">{{ total }}</p>
+        <p class="stat-description">Total saved prediction records</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Predicted Real</span>
+            <span class="stat-icon">✓</span>
+        </div>
+        <p class="stat-value" style="color: #34d399;">{{ real }}</p>
+        <p class="stat-description">Images classified as Real by the model</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span class="stat-label">Predicted Fake</span>
+            <span class="stat-icon">⚠</span>
+        </div>
+        <p class="stat-value" style="color: #fb7185;">{{ fake }}</p>
+        <p class="stat-description">Images classified as Fake by the model</p>
+    </article>
+</section>
+
+<section class="analytics-card">
+    <h2 class="section-heading">Prediction Distribution</h2>
+    <p class="section-description">
+        Breakdown of saved model predictions. Percentages are based on the total
+        number of analyzed records.
+    </p>
+
+    {% if total > 0 %}
+        <div class="distribution-row">
+            <span class="distribution-label">
+                <span class="legend-dot real-dot"></span>
+                Predicted Real
+            </span>
+            <span class="distribution-value">
+                {{ real }} · {{ "%.1f"|format(real_percent) }}%
+            </span>
+        </div>
+
+        <div class="progress-track" role="img"
+             aria-label="Predicted Real: {{ '%.1f'|format(real_percent) }} percent">
+            <div class="progress-fill real-fill"
+                style="width: {{ real_percent | round(2) }}%;" ></div>
+        </div>
+
+        <div class="distribution-row">
+            <span class="distribution-label">
+                <span class="legend-dot fake-dot"></span>
+                Predicted Fake
+            </span>
+            <span class="distribution-value">
+                {{ fake }} · {{ "%.1f"|format(fake_percent) }}%
+            </span>
+        </div>
+
+        <div class="progress-track" role="img"
+             aria-label="Predicted Fake: {{ '%.1f'|format(fake_percent) }} percent">
+            <div class="progress-fill fake-fill"
+                 style="width: {{ real_percent | round(2) }}%;"></div>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p><strong>No analysis data yet</strong></p>
+            <p>Upload an image to generate your first prediction and populate these statistics.</p>
+            <a class="dashboard-btn" href="{{ url_for('home') }}">Analyze First Image</a>
+        </div>
+    {% endif %}
+</section>
+
+<section class="actions-grid">
+    <article class="action-card">
+        <h3>🔍 Analyze a New Image</h3>
+        <p>Upload an image and view the model's prediction and score.</p>
+        <a class="dashboard-btn" href="{{ url_for('home') }}">Analyze Image</a>
+    </article>
+
+    <article class="action-card">
+        <h3>🕘 Prediction History</h3>
+        <p>Review previous image analysis records and their results.</p>
+        <a class="dashboard-btn secondary" href="{{ url_for('history_page') }}">View History</a>
+    </article>
+</section>
+
+<div class="disclaimer">
+    <strong>Important:</strong> These statistics show the model's predictions,
+    not verified ground truth. DeepShield AI is experimental and may
+    misclassify images. Prediction scores should not be treated as guaranteed
+    accuracy or proof that an image is genuine or manipulated.
+</div>
+{% endblock %}

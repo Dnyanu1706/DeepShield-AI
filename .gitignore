@@ -1,0 +1,17 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.env
+*.log
+.vscode/
+.DS_Store
+
+# Local database and uploaded images
+database.db
+static/uploads/*
+
+# Dataset and trained model files
+Dataset/
+models/*.keras
+models/*.h5

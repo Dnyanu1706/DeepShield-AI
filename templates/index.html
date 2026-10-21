@@ -1,0 +1,406 @@
+
+{% extends "base.html" %}
+
+{% block title %}Home | DeepShield AI{% endblock %}
+
+{% block head %}
+<style>
+    .hero {
+        text-align: center;
+        padding: 18px 10px 26px;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        color: #a8c8ff;
+        background: rgba(79, 140, 255, 0.09);
+        border: 1px solid rgba(79, 140, 255, 0.25);
+        border-radius: 30px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+    }
+
+    .status-dot {
+        width: 7px;
+        height: 7px;
+        background: #48d7a1;
+        border-radius: 50%;
+        box-shadow: 0 0 9px rgba(72, 215, 161, 0.5);
+    }
+
+    .hero h1 {
+        margin: 20px 0 12px;
+        font-size: clamp(34px, 5.5vw, 55px);
+        line-height: 1.12;
+        letter-spacing: -1.5px;
+        font-weight: 850;
+    }
+
+    .hero h1 span {
+        color: #83aaff;
+    }
+
+    .hero-description {
+        max-width: 620px;
+        margin: 0 auto;
+        font-size: 15px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin: 20px 0 25px;
+    }
+
+    .stat-card {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        min-width: 0;
+        padding: 20px;
+        background: #131720;
+        border: 1px solid #293243;
+        border-radius: 14px;
+        transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        border-color: #49628a;
+    }
+
+    .stat-icon {
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        width: 45px;
+        height: 45px;
+        font-size: 21px;
+        background: #1d2b43;
+        border-radius: 12px;
+    }
+
+    .stat-card:nth-child(2) .stat-icon {
+        background: #153329;
+    }
+
+    .stat-card:nth-child(3) .stat-icon {
+        background: #392027;
+    }
+
+    .stat-label {
+        margin: 0 0 5px;
+        color: #9ba8ba;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .stat-value {
+        margin: 0;
+        color: #f3f6fc;
+        font-size: 27px;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .upload-panel {
+        padding: 26px;
+        background: #131720;
+        border: 1px solid #293243;
+        border-radius: 18px;
+    }
+
+    .section-heading {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 5px;
+    }
+
+    .section-heading h2 {
+        margin: 0;
+        font-size: 21px;
+    }
+
+    .section-icon {
+        display: grid;
+        place-items: center;
+        width: 39px;
+        height: 39px;
+        background: #1d2b43;
+        border-radius: 10px;
+        font-size: 19px;
+    }
+
+    .upload-description {
+        margin: 8px 0 20px;
+        font-size: 13px;
+    }
+
+    .upload-box {
+        padding: 32px 18px;
+        text-align: center;
+        background: #0e121a;
+        border: 1.5px dashed #3b4a61;
+        border-radius: 14px;
+        transition: border-color 0.2s, background 0.2s;
+    }
+
+    .upload-box:hover,
+    .upload-box.dragging {
+        border-color: #6798ff;
+        background: #111a2a;
+    }
+
+    .upload-icon {
+        display: grid;
+        place-items: center;
+        width: 58px;
+        height: 58px;
+        margin: 0 auto 15px;
+        color: #9fc1ff;
+        background: #1b2a43;
+        border: 1px solid #304c79;
+        border-radius: 16px;
+        font-size: 27px;
+    }
+
+    .upload-box label {
+        display: block;
+        margin-bottom: 7px;
+        color: #f3f6fc;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .upload-box p {
+        margin: 7px 0;
+        font-size: 12px;
+    }
+
+    .upload-box input[type="file"] {
+        display: block;
+        width: 100%;
+        max-width: 360px;
+        margin: 18px auto;
+        padding: 9px;
+        color: #c5d0e0;
+        background: #131923;
+        border: 1px solid #344054;
+        border-radius: 8px;
+    }
+
+    .upload-box input[type="file"]::file-selector-button {
+        padding: 8px 10px;
+        margin-right: 10px;
+        color: #e8efff;
+        background: #253b5e;
+        border: 1px solid #466798;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .upload-box .btn {
+        min-width: 185px;
+        margin-top: 8px;
+    }
+
+    .quick-links {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .notice {
+        margin-top: 18px;
+        padding: 12px 14px;
+        color: #aebbd0;
+        background: #171c26;
+        border: 1px solid #293243;
+        border-radius: 9px;
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    @media (max-width: 700px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .stat-card {
+            padding: 15px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+        }
+
+        .upload-panel {
+            padding: 18px;
+        }
+    }
+
+    @media (max-width: 420px) {
+        .hero h1 {
+            letter-spacing: -0.7px;
+        }
+
+        .upload-box {
+            padding: 25px 12px;
+        }
+
+        .quick-links {
+            flex-direction: column;
+        }
+
+        .quick-links a {
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-badge">
+        <span class="status-dot"></span>
+        AI-POWERED IMAGE ANALYSIS
+    </div>
+
+    <h1>Welcome to <span>DeepShield AI</span></h1>
+
+    <p class="hero-description">
+        Analyze images with your deepfake detection model.
+        Upload an image, review the prediction, and access your analysis history.
+    </p>
+</section>
+
+<section class="stats-grid" aria-label="Prediction statistics">
+    <article class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div>
+            <p class="stat-label">Total Analyses</p>
+            <p class="stat-value">{{ total_images }}</p>
+        </div>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-icon">✓</div>
+        <div>
+            <p class="stat-label">Predicted Real</p>
+            <p class="stat-value">{{ real_count }}</p>
+        </div>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-icon">⚠</div>
+        <div>
+            <p class="stat-label">Predicted Fake</p>
+            <p class="stat-value">{{ fake_count }}</p>
+        </div>
+    </article>
+</section>
+
+<section class="upload-panel">
+    <div class="section-heading">
+        <div class="section-icon">↥</div>
+        <h2>Analyze an Image</h2>
+    </div>
+
+    <p class="upload-description">
+        Select an image from your device to run the model prediction.
+    </p>
+
+    <form
+        id="uploadForm"
+        action="{{ url_for('predict') }}"
+        method="POST"
+        enctype="multipart/form-data"
+    >
+        <div class="upload-box" id="uploadBox">
+            <div class="upload-icon">↥</div>
+
+            <label for="image">Choose an image to analyze</label>
+
+            <p>Supported formats: JPG, JPEG, PNG, WEBP, BMP</p>
+            <p>Choose a clear image for analysis.</p>
+
+            <input
+                type="file"
+                id="image"
+                name="image"
+                accept=".jpg,.jpeg,.png,.webp,.bmp"
+                required
+            >
+
+            <p id="fileName" aria-live="polite">No image selected</p>
+
+            <button class="btn" type="submit">
+                Analyze Image <span aria-hidden="true">→</span>
+            </button>
+        </div>
+    </form>
+
+    <div class="quick-links">
+        <a class="secondary-btn" href="{{ url_for('dashboard_page') }}">
+            📈 View Dashboard
+        </a>
+        <a class="secondary-btn" href="{{ url_for('history_page') }}">
+            🕘 Prediction History
+        </a>
+        <a class="secondary-btn" href="{{ url_for('download_report') }}">
+            📄 Download PDF Report
+        </a>
+    </div>
+
+    <div class="notice">
+        <strong>Important:</strong>
+        Predictions are experimental and may be incorrect.
+        The model score is not a calibrated probability and does not prove
+        that an image is authentic or manipulated.
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const imageInput = document.getElementById("image");
+    const fileName = document.getElementById("fileName");
+    const uploadBox = document.getElementById("uploadBox");
+
+    imageInput.addEventListener("change", function () {
+        if (this.files && this.files.length > 0) {
+            fileName.textContent = "Selected: " + this.files[0].name;
+        } else {
+            fileName.textContent = "No image selected";
+        }
+    });
+
+    uploadBox.addEventListener("dragover", function (event) {
+        event.preventDefault();
+        uploadBox.classList.add("dragging");
+    });
+
+    uploadBox.addEventListener("dragleave", function () {
+        uploadBox.classList.remove("dragging");
+    });
+
+    uploadBox.addEventListener("drop", function (event) {
+        event.preventDefault();
+        uploadBox.classList.remove("dragging");
+
+        if (event.dataTransfer.files.length > 0) {
+            imageInput.files = event.dataTransfer.files;
+            imageInput.dispatchEvent(new Event("change"));
+        }
+    });
+</script>
+{% endblock %}
