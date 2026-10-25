@@ -13,5 +13,4 @@ static/uploads/*
 
 # Dataset and trained model files
 Dataset/
-models/*.keras
 models/*.h5

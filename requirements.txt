@@ -1,8 +1,7 @@
-
 Flask
-tensorflow
-opencv-python
-numpy
+tensorflow==2.21.0
+numpy==2.5.4
+opencv-python-headless
 Pillow
 scikit-learn
 matplotlib
