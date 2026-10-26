@@ -31,10 +31,23 @@ app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 MB
 initialize_database()
 UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
 
-# Load the trained CNN model
+
+# Load the trained CNN model only when needed
 model = None
-if MODEL_PATH.exists():
-    model = tf.keras.models.load_model(MODEL_PATH)
+
+def get_model():
+    global model
+
+    if model is None:
+        if not MODEL_PATH.exists():
+            raise FileNotFoundError(
+                f"Model file not found: {MODEL_PATH}"
+            )
+
+        model = tf.keras.models.load_model(MODEL_PATH)
+
+    return model
+
 
 
 def allowed_file(filename):
@@ -51,7 +64,8 @@ def predict_image(image_path):
     # Pass raw RGB pixel values in the range 0–255.
     image_array = np.expand_dims(image_array, axis=0)
 
-    score = float(model.predict(image_array, verbose=0)[0][0])
+    loaded_model = get_model()
+    score = float(loaded_model.predict(image_array, verbose=0)[0][0])
 
     # Model class mapping: Fake=0, Real=1
     if score >= 0.5:
@@ -123,11 +137,6 @@ def dashboard_page():
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    if model is None:
-        return (
-            "Trained model not found. Please check models/image_model.keras.",
-            500,
-        )
 
     if "image" not in request.files:
         return "Please select an image.", 400
